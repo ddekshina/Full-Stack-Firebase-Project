@@ -5,7 +5,8 @@ import {
   GoogleAuthProvider, 
   signInWithPopup, 
   signOut, 
-  onAuthStateChanged, 
+  onAuthStateChanged,
+  UserCredential, 
   User 
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
@@ -14,7 +15,7 @@ import { auth } from '@/lib/firebase/config';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGoogle: () => Promise<UserCredential>;
   logout: () => Promise<void>;
 }
 
@@ -22,7 +23,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  signInWithGoogle: async () => {},
+  signInWithGoogle: async () => {
+    return {} as UserCredential;
+  },
   logout: async () => {},
 });
 
@@ -55,17 +58,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [mounted]);
 
-  // Sign in with Google
-  // Sign in with Google
+  
 const signInWithGoogle = async () => {
-  const provider = new GoogleAuthProvider();
   try {
     console.log('Attempting to sign in with Google...');
-    // Add popup configuration to handle potential popup blockers
+    const provider = new GoogleAuthProvider();
+    // This is important - it helps prevent popup blockers
+    provider.setCustomParameters({ prompt: 'select_account' });
     const result = await signInWithPopup(auth, provider);
     console.log('Sign-in successful', result.user);
-  } catch (error) {
-      console.error('Error signing in with Google', error);
+    return result;
+  } catch (error: any) {
+    console.error('Error signing in with Google', error);
+    // Check if it's a popup blocked error
+    if (error.code === 'auth/popup-blocked') {
+      alert('Popup was blocked. Please enable popups for this site and try again.');
+    } else {
+      alert(`Authentication error: ${error.message}`);
+    }
+    throw error;
   }
 };
 
@@ -85,5 +96,5 @@ const signInWithGoogle = async () => {
     logout,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value ={value}>{children}</AuthContext.Provider>;
 };

@@ -24,16 +24,6 @@ export default function Login() {
     }
   }, [user, router, mounted]);
 
-  const debugFirebase = () => {
-    console.log("Auth instance:", auth);
-    console.log("Current user:", auth.currentUser);
-    console.log("Firebase config:", {
-      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    });
-  };
-
   // Don't render anything until client-side hydration is complete
   if (!mounted) {
     return null;
@@ -62,13 +52,6 @@ export default function Login() {
             </Button>
           </Box>
         </Paper>
-        <Button 
-  variant="outlined"
-  onClick={debugFirebase}
-  sx={{ mt: 2 }}
->
-  Debug Firebase
-</Button>
       </Box>
     </Container>
   );
