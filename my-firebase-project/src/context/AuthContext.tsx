@@ -31,29 +31,43 @@ export const useAuth = () => useContext(AuthContext);
 
 // Provider component to wrap around our app
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Initialize with null and true for SSR compatibility
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  // Track if component is mounted to avoid state updates during SSR
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Mark component as mounted
+    setMounted(true);
+    
     // Subscribe to auth state changes
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
+      if (mounted) {
+        setUser(user);
+        setLoading(false);
+      }
     });
 
     // Cleanup subscription
-    return () => unsubscribe();
-  }, []);
+    return () => {
+      unsubscribe();
+    };
+  }, [mounted]);
 
   // Sign in with Google
-  const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
+  // Sign in with Google
+const signInWithGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  try {
+    console.log('Attempting to sign in with Google...');
+    // Add popup configuration to handle potential popup blockers
+    const result = await signInWithPopup(auth, provider);
+    console.log('Sign-in successful', result.user);
+  } catch (error) {
       console.error('Error signing in with Google', error);
-    }
-  };
+  }
+};
 
   // Sign out
   const logout = async () => {

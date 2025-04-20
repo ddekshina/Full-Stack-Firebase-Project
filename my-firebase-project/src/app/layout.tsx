@@ -1,11 +1,11 @@
-'use client';
+// This must remain as a server component
+import { Metadata } from 'next';
+import ClientLayout from './client-layout';
 
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from '@/lib/theme/theme';
-import { AuthProvider } from '@/context/AuthContext';
-import Navbar from '@/components/Navbar';
-import { Box } from '@mui/material';
+export const metadata: Metadata = {
+  title: 'Firebase Project',
+  description: 'Next.js with Firebase Authentication',
+};
 
 export default function RootLayout({
   children,
@@ -15,17 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <AuthProvider>
-            <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-              <Navbar />
-              <Box component="main" sx={{ flexGrow: 1 }}>
-                {children}
-              </Box>
-            </Box>
-          </AuthProvider>
-        </ThemeProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

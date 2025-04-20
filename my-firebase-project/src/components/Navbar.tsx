@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   AppBar, 
   Toolbar, 
@@ -19,6 +19,12 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [mounted, setMounted] = useState(false);
+  
+  // Set mounted state
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -38,6 +44,19 @@ export default function Navbar() {
     await logout();
     router.push('/login');
   };
+
+  // Don't render full UI until after hydration
+  if (!mounted) {
+    return (
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Firebase Project
+          </Typography>
+        </Toolbar>
+      </AppBar>
+    );
+  }
 
   return (
     <AppBar position="static">

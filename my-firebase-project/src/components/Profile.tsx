@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Container, Typography, Avatar, Paper, Divider } from '@mui/material';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -8,13 +8,24 @@ import { useRouter } from 'next/navigation';
 export default function Profile() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  
+  // Set mounted state
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   // If user is not logged in, redirect to login
-  React.useEffect(() => {
-    if (!user) {
+  useEffect(() => {
+    if (mounted && !user) {
       router.push('/login');
     }
-  }, [user, router]);
+  }, [user, router, mounted]);
+
+  // Don't render anything until client-side hydration is complete
+  if (!mounted) {
+    return null;
+  }
 
   // If user is null (still loading), show loading state
   if (!user) {
