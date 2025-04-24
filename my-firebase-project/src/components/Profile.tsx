@@ -4,6 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Container, Typography, Avatar, Paper, Divider } from '@mui/material';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the FCM component to avoid SSR issues
+const FCMNotificationHandler = dynamic(
+  () => import('./FCMNotificationHandler'),
+  { ssr: false }
+);
 
 export default function Profile() {
   const { user, logout } = useAuth();
@@ -66,6 +73,9 @@ export default function Profile() {
               <strong>Email Verified:</strong> {user.emailVerified ? 'Yes' : 'No'}
             </Typography>
           </Box>
+          
+          {/* FCM Notification Handler */}
+          <FCMNotificationHandler />
           
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
             <Button 
